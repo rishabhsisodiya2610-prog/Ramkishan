@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packing Orders</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .print-button {
+            display: block;
+            width: 100px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* Styles for modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Additional styles for edit field and save button */
+        .editBoxType {
+            margin-bottom: 10px;
+        }
+
+        .editBoxType label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .editBoxType input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .saveEditBtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .saveEditBtn:hover {
+            background-color: #45a049;
+        }
+
+        /* Hide edit button when printing */
+        @media print {
+            .editButton {
+                display: none !important;
+            }
+        }
+
+        /* CSS for the select dropdown menu */
+        #packingFilter {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Style for the container div */
+        .home-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* Style for the home button */
+        .home-button {
+            display: block;
+            width: 30px;
+            /* Adjust width as needed */
+            height: 30px;
+            /* Adjust height as needed */
+        }
+
+        /* Style for the home button image */
+        .home-button img {
+            width: 100%;
+            /* Make the image fill the button */
+            height: auto;
+            transition: filter 0.3s ease;
+            /* Add transition for smooth color change */
+        }
+
+        /* Hover effect for the home button image */
+        .home-button:hover img {
+            filter: grayscale(100%);
+            /* Convert the image to black and white */
+        }
+
+        
+        /* Button styles */
+        .button {
+            display: inline-block;
+            padding: 8px 16px; /* Decreased padding */
+            font-size: 16px; /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+        /* Logout button styles */
+        .logout-button {
+            padding: 8px 16px; /* Decreased padding */
+            font-size: 16px; /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #dc3545; /* Red color for logout button */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333; /* Darker shade on hover */
+        }
+
+        /* Logo image styles */
+        .logo {
+            width: 100px; /* Adjust width */
+            height: auto; /* Maintain aspect ratio */
+            margin-top: 70px; /* Adjust margin */
+        }
+
+        /* Navbar styles */
+        nav {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px; /* Add margin */
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #495057;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="neworder.html">New Order</a>
+        <a href="allorders.html">All Orders</a>
+        <a href="Ldgr.html">Order Slip</a>
+        <a href="snacks.html">Snacks</a>
+        <a href="packing.html">Packing</a>
+        <a href="ordertime.html">Department Wise</a>
+        <a href="home.html" class="home-button">
+            <img src="img/home.png" alt="Home">
+        </a>
+        <button class="button logout-button" onclick="logout()">Logout</button>
+    </nav>
+    
+
+
+
+    <div class="container">
+        <h2>Packing Orders</h2>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by Name, Order Number, Date, Time Range">
+            <select id="packingFilter">
+                <option value="">Filter by Packing</option>
+                <!-- Populate options dynamically using JavaScript -->
+            </select>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Order No</th>
+                    <th>Date</th>
+                    <th>Box Types</th>
+                    <th>Packing</th>
+                    <th>Time</th>
+                    <th class="editButton">Edit</th>
+                </tr>
+            </thead>
+            <tbody id="packingOrdersBody">
+                <!-- Orders for packing will be inserted here dynamically -->
+            </tbody>
+        </table>
+        <button class="print-button" onclick="printPage()">Print</button>
+
+    </div>
+
+    <!-- Modal for editing packing details -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Edit Packing Details</h3>
+            <div id="editBoxTypes"></div>
+            <button class="saveEditBtn" onclick="savePackingEdit()">Save</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            displayPackingOrders();
+            document.getElementById('searchInput').addEventListener('input', searchOrders);
+            populatePackingFilter();
+            document.getElementById('packingFilter').addEventListener('change', filterByPacking);
+        });
+
+        function displayPackingOrders() {
+            var packingOrdersBody = document.getElementById('packingOrdersBody');
+            var allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+            // Sort orders by time
+            allOrders.sort(function (a, b) {
+                return compareTimes(a.deliveryTime, b.deliveryTime);
+            });
+
+            packingOrdersBody.innerHTML = ''; // Clear existing rows
+
+            allOrders.forEach(function (order) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${order.name}</td>
+            <td>${order.orderNo}</td>
+            <td>${order.deliveryDate}</td>
+            <td>${formatBoxTypes(order.boxes)}</td>
+            <td>${formatPacking(order.boxes)}</td>
+            <td>${formatTime(order.deliveryTime)}</td>
+            <td class="editButton"><button onclick="editPacking('${order.orderNo}')">Edit</button></td>
+        `;
+                packingOrdersBody.appendChild(row);
+            });
+        }
+
+        function compareTimes(time1, time2) {
+            var time1Parts = time1.split(":");
+            var time2Parts = time2.split(":");
+            var hours1 = parseInt(time1Parts[0]);
+            var hours2 = parseInt(time2Parts[0]);
+            var minutes1 = parseInt(time1Parts[1]);
+            var minutes2 = parseInt(time2Parts[1]);
+
+            if (hours1 !== hours2) {
+                return hours1 - hours2;
+            } else {
+                return minutes1 - minutes2;
+            }
+        }
+
+        function formatBoxTypes(boxes) {
+            var boxTypesString = '';
+            boxes.forEach(function (box) {
+                boxTypesString += `${box.type}<br>`;
+            });
+            return boxTypesString;
+        }
+
+        function formatPacking(boxes) {
+            var packingString = '';
+            boxes.forEach(function (box) {
+                if (box.packing) {
+                    packingString += `${box.packing}<br>`;
+                }
+            });
+            return packingString;
+        }
+
+        function formatTime(time) {
+            var timeParts = time.split(":");
+            var hours = parseInt(timeParts[0]);
+            var minutes = parseInt(timeParts[1]);
+            var period = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return hours + ':' + minutes + ' ' + period;
+        }
+
+        function searchOrders() {
+            var input = document.getElementById('searchInput').value.toLowerCase();
+            var rows = document.getElementById('packingOrdersBody').getElementsByTagName('tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                var name = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+                var orderNo = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+                var date = rows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+                var time = rows[i].getElementsByTagName('td')[5].innerText.toLowerCase();
+
+                if (name.includes(input) || orderNo.includes(input) || date.includes(input) || isTimeInRange(time, input)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        function isTimeInRange(orderTime, timeRange) {
+            var timeParts = timeRange.split('-');
+            var startTime = parseTime(timeParts[0]);
+            var endTime = parseTime(timeParts[1]);
+            var orderTimeParsed = parseTime(orderTime);
+
+            return orderTimeParsed >= startTime && orderTimeParsed <= endTime;
+        }
+
+        function parseTime(timeString) {
+            var parts = timeString.split(':');
+            var hours = parseInt(parts[0]);
+            var minutes = parseInt(parts[1]);
+
+            return hours * 60 + minutes;
+        }
+
+        function editPacking(orderNo) {
+            var modal = document.getElementById('editModal');
+            var allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var orderToUpdate = allOrders.find(order => order.orderNo === orderNo);
+
+            var editBoxTypesDiv = document.getElementById('editBoxTypes');
+            editBoxTypesDiv.innerHTML = '';
+
+            orderToUpdate.boxes.forEach(box => {
+                var editBoxTypeDiv = document.createElement('div');
+                editBoxTypeDiv.className = 'editBoxType';
+                editBoxTypeDiv.innerHTML = `
+            <label for="editPackingInput_${box.type}">${box.type}</label>
+            <input type="text" id="editPackingInput_${box.type}" value="${box.packing || ''}" placeholder="Enter packing details for ${box.type}">
+        `;
+                editBoxTypesDiv.appendChild(editBoxTypeDiv);
+            });
+
+            modal.style.display = 'block';
+            modal.setAttribute('data-order-no', orderNo);
+        }
+
+        function closeModal() {
+            var modal = document.getElementById('editModal');
+            modal.style.display = 'none';
+        }
+
+        function savePackingEdit() {
+            var orderNo = document.getElementById('editModal').getAttribute('data-order-no');
+            var allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var orderToUpdate = allOrders.find(order => order.orderNo === orderNo);
+
+            orderToUpdate.boxes.forEach(box => {
+                var boxType = box.type;
+                var updatedPacking = document.getElementById('editPackingInput_' + boxType).value.trim();
+                box.packing = updatedPacking;
+            });
+
+            localStorage.setItem('allOrders', JSON.stringify(allOrders));
+            closeModal();
+            displayPackingOrders();
+        }
+
+        function populatePackingFilter() {
+            var allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var packingSet = new Set();
+
+            allOrders.forEach(function (order) {
+                order.boxes.forEach(function (box) {
+                    if (box.packing) {
+                        packingSet.add(box.packing.toLowerCase());
+                    }
+                });
+            });
+
+            var packingFilter = document.getElementById('packingFilter');
+            packingSet.forEach(function (packing) {
+                var option = document.createElement('option');
+                option.value = packing;
+                option.textContent = packing;
+                packingFilter.appendChild(option);
+            });
+        }
+
+        function filterByPacking() {
+            var selectedPacking = document.getElementById('packingFilter').value.toLowerCase();
+            var rows = document.getElementById('packingOrdersBody').getElementsByTagName('tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                var packing = rows[i].getElementsByTagName('td')[4].innerText.toLowerCase();
+
+                if (selectedPacking === '' || packing.includes(selectedPacking)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        function printPage() {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ledger</title>
+    <style>
+        /* Your CSS styles */
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card-body {
+            font-size: 14px;
+        }
+
+        .btn-group {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-group button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Print modal styles */
+        .print-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .print-content {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: auto;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        /* Edit modal styles */
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .edit-content {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: auto;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        /* Search input styles */
+        #searchOrderNoInput,
+        #searchNameInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        #ledger {
+            margin-top: 20px;
+        }
+
+        .item-row {
+            margin-bottom: 10px;
+        }
+
+        .item-row input {
+            margin-right: 10px;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+        }
+
+        @media print {
+            /* Hide the print button when printing */
+            .btn-group button {
+                display: none;
+            }
+        }
+
+        /* Style for the container div */
+.home-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+/* Style for the home button */
+.home-button {
+    display: block;
+    width: 30px; /* Adjust width as needed */
+    height: 30px; /* Adjust height as needed */
+}
+
+/* Style for the home button image */
+.home-button img {
+    width: 100%; /* Make the image fill the button */
+    height: auto;
+    transition: filter 0.3s ease; /* Add transition for smooth color change */
+}
+
+/* Hover effect for the home button image */
+.home-button:hover img {
+    filter: grayscale(100%); /* Convert the image to black and white */
+}
+
+    </style>
+</head>
+
+<body>
+    
+    <div>
+        <a href="home.html" class="home-button">
+            <img src="img/home.png" alt="Home">
+        </a>
+    </div>
+    
+    <div class="container">
+        <h2>Ledger</h2>
+        <!-- Search input for order number -->
+        <input type="text" id="searchOrderNoInput" placeholder="Search by Order Number">
+        <!-- Search input for customer name -->
+        <input type="text" id="searchNameInput" placeholder="Search by Customer Name">
+        <div id="ledger"></div>
+        <div class="btn-group">
+            <button onclick="returnHome()">New Order</button>
+        </div>
+    </div>
+
+    <div class="print-modal" id="printModal">
+        <div class="print-content" id="printContent">
+            <!-- Print content will be dynamically added here -->
+        </div>
+        <button onclick="closePrintModal()">Close</button>
+    </div>
+
+    <div id="editOrderModal" class="edit-modal">
+        <div class="edit-content">
+            <h2>Edit Order</h2>
+            <!-- Edit order form fields -->
+            <label for="editDeliveryDate">Delivery Date:</label>
+            <input type="text" id="editDeliveryDate" name="editDeliveryDate"><br>
+
+            <label for="editDeliveryTime">Delivery Time:</label>
+            <input type="text" id="editDeliveryTime" name="editDeliveryTime"><br>
+
+            <label for="editAdvance">Advance:</label>
+            <input type="text" id="editAdvance" name="editAdvance"><br>
+
+            <label for="editBalance">Balance:</label>
+            <input type="text" id="editBalance" name="editBalance"><br>
+
+            <div id="boxesContainer">
+                <!-- Box input fields will be dynamically added here -->
+            </div>
+            <button id="addBoxButton" type="button" onclick="addBox()">Add Box</button><br>
+
+            <div id="itemsContainer">
+                <!-- Item input fields will be dynamically added here -->
+            </div>
+            <button id="addItemButton" type="button" onclick="addItem()">Add Item</button><br>
+
+            <button id="saveEditButton" type="button">Save Edit</button>
+            <button class="close" onclick="closeEditModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            displayOrdersFromAllOrdersPage();
+            // Attach event listeners for search inputs
+            document.getElementById('searchOrderNoInput').addEventListener('input', searchOrderByOrderNo);
+            document.getElementById('searchNameInput').addEventListener('input', searchOrderByName);
+        });
+
+        function displayOrdersFromAllOrdersPage() {
+            var ledger = document.getElementById('ledger');
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+            ledger.innerHTML = ''; // Clear previous content
+
+            orders.forEach(function (order) {
+                var card = document.createElement('div');
+                card.classList.add('card');
+
+                var header = document.createElement('div');
+                header.classList.add('card-header');
+                header.textContent = 'Order No: ' + order.orderNo;
+                card.appendChild(header);
+
+                var body = document.createElement('div');
+                body.classList.add('card-body');
+
+                var customerInfo = document.createElement('p');
+                customerInfo.innerHTML = '<strong>Name:</strong> ' + order.name + '<br>' +
+                    '<strong>Delivery Date:</strong> ' + order.deliveryDate + '<br>' +
+                    '<strong>Delivery Time:</strong> ' + order.deliveryTime;
+                body.appendChild(customerInfo);
+
+                var orderInfo = document.createElement('p');
+                orderInfo.innerHTML = '<strong>Advance:</strong> ' + order.advance + '<br>' +
+                    '<strong>Balance:</strong> ' + order.balance + '<br>' +
+                    '<strong>Boxes:</strong> ' + formatBoxes(order.boxes) + '<br>' +
+                    '<strong>Items:</strong> ' + formatItems(order.items) + '<br>' +
+                    '<strong>Items Departments:</strong> ' + formatItemsDepartments(order.items) + '<br>' +
+                    '<strong Items Quantities:</strong > ' + formatItemsQuantities(order.items);
+                body.appendChild(orderInfo);
+
+                var actionButtons = document.createElement('div');
+                actionButtons.classList.add('btn-group');
+                actionButtons.innerHTML = '<button onclick="printOrder(\'' + order.orderNo + '\')">Print</button>' +
+                    '<button onclick="openEditModal(\'' + order.orderNo + '\')">Edit</button>'; // Add Edit button
+                body.appendChild(actionButtons);
+
+                card.appendChild(body);
+                ledger.appendChild(card);
+            });
+        }
+
+        function formatBoxes(boxes) {
+            return boxes.map(function (box) {
+                var formattedPrice = new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'INR'
+                }).format(box.rate);
+                return box.type + ': ' + box.total + ' box(es) at ' + formattedPrice + ' each';
+            }).join('<br>');
+        }
+
+        function formatItems(items) {
+            return items.map(function (item) {
+                return `${item.name}: ${item.quantity}`;
+            }).join('<br>');
+        }
+
+        function formatItemsDepartments(items) {
+            return items.map(function (item) {
+                return item.department;
+            }).join('<br>');
+        }
+
+        function formatItemsQuantities(items) {
+            return items.map(function (item) {
+                return item.quantity;
+            }).join('<br>');
+        }
+
+        function openEditModal(orderNo) {
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var orderToEdit = orders.find(function (order) {
+                return order.orderNo === orderNo;
+            });
+
+            document.getElementById('editDeliveryDate').value = orderToEdit.deliveryDate;
+            document.getElementById('editDeliveryTime').value = orderToEdit.deliveryTime;
+            document.getElementById('editAdvance').value = orderToEdit.advance;
+            document.getElementById('editBalance').value = orderToEdit.balance;
+
+            var boxesContainer = document.getElementById('boxesContainer');
+            boxesContainer.innerHTML = ''; // Clear previous content
+            orderToEdit.boxes.forEach(function (box, index) {
+                var boxDiv = document.createElement('div');
+                boxDiv.classList.add('item-row');
+                boxDiv.innerHTML = `<input type="text" name="boxType" value="${box.type}" placeholder="Box Type">
+                                    <input type="number" name="boxTotal" value="${box.total}" placeholder="Total">
+                                    <input type="number" name="boxRate" value="${box.rate}" placeholder="Rate">
+                                    <button type="button" onclick="removeBox(this)">Remove</button>`;
+                boxesContainer.appendChild(boxDiv);
+            });
+
+            var itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = ''; // Clear previous content
+            orderToEdit.items.forEach(function (item, index) {
+                var itemDiv = document.createElement('div');
+                itemDiv.classList.add('item-row');
+                itemDiv.innerHTML = `<input type="text" name="itemName" value="${item.name}" placeholder="Item Name">
+                                     <input type="number" name="itemQuantity" value="${item.quantity}" placeholder="Quantity">
+                                     <input type="text" name="itemDepartment" value="${item.department}" placeholder="Department">
+                                     <button type="button" onclick="removeItem(this)">Remove</button>`;
+                itemsContainer.appendChild(itemDiv);
+            });
+
+            var modal = document.getElementById('editOrderModal');
+            modal.style.display = "block";
+
+            var closeButton = document.getElementsByClassName("close")[0];
+            closeButton.onclick = function () {
+                modal.style.display = "none";
+            };
+
+            document.getElementById('saveEditButton').onclick = function () {
+                orderToEdit.deliveryDate = document.getElementById('editDeliveryDate').value;
+                orderToEdit.deliveryTime = document.getElementById('editDeliveryTime').value;
+                orderToEdit.advance = document.getElementById('editAdvance').value;
+                orderToEdit.balance = document.getElementById('editBalance').value;
+                orderToEdit.boxes = parseBoxes();
+                orderToEdit.items = parseItems();
+
+                var index = orders.findIndex(function (order) {
+                    return order.orderNo === orderNo;
+                });
+
+                orders[index] = orderToEdit;
+
+                localStorage.setItem('allOrders', JSON.stringify(orders));
+
+                modal.style.display = "none";
+
+                // Reload the ledger after edit
+                displayOrdersFromAllOrdersPage();
+
+                alert("Order edited: " + orderNo);
+            };
+        }
+
+        function closeEditModal() {
+            var modal = document.getElementById('editOrderModal');
+            modal.style.display = "none";
+        }
+
+        function addBox() {
+            var boxesContainer = document.getElementById('boxesContainer');
+            var boxDiv = document.createElement('div');
+            boxDiv.classList.add('item-row');
+            boxDiv.innerHTML = `<input type="text" name="boxType" placeholder="Box Type">
+                                <input type="number" name="boxTotal" placeholder="Total">
+                                <input type="number" name="boxRate" placeholder="Rate">
+                                <button type="button" onclick="removeBox(this)">Remove</button>`;
+            boxesContainer.appendChild(boxDiv);
+        }
+
+        function addItem() {
+            var itemsContainer = document.getElementById('itemsContainer');
+            var itemDiv = document.createElement('div');
+            itemDiv.classList.add('item-row');
+            itemDiv.innerHTML = `<input type="text" name="itemName" placeholder="Item Name">
+                                 <input type="number" name="itemQuantity" placeholder="Quantity">
+                                 <input type="text" name="itemDepartment" placeholder="Department">
+                                 <button type="button" onclick="removeItem(this)">Remove</button>`;
+            itemsContainer.appendChild(itemDiv);
+        }
+
+        function removeBox(button) {
+            button.parentNode.remove();
+        }
+
+        function removeItem(button) {
+            button.parentNode.remove();
+        }
+
+        function parseBoxes() {
+            var boxesContainer = document.getElementById('boxesContainer');
+            var boxes = [];
+            var boxDivs = boxesContainer.querySelectorAll('.item-row');
+            boxDivs.forEach(function (boxDiv) {
+                var type = boxDiv.querySelector('input[name="boxType"]').value;
+                var total = boxDiv.querySelector('input[name="boxTotal"]').value;
+                var rate = boxDiv.querySelector('input[name="boxRate"]').value;
+                boxes.push({
+                    type: type,
+                    total: total,
+                    rate: rate
+                });
+            });
+            return boxes;
+        }
+
+        function parseItems() {
+            var itemsContainer = document.getElementById('itemsContainer');
+            var items = [];
+            var itemDivs = itemsContainer.querySelectorAll('.item-row');
+            itemDivs.forEach(function (itemDiv) {
+                var name = itemDiv.querySelector('input[name="itemName"]').value;
+                var quantity = itemDiv.querySelector('input[name="itemQuantity"]').value;
+                var department = itemDiv.querySelector('input[name="itemDepartment"]').value;
+                items.push({
+                    name: name,
+                    quantity: quantity,
+                    department: department
+                });
+            });
+            return items;
+        }
+
+        function printOrder(orderNo) {
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var orderToPrint = orders.find(function (order) {
+                return order.orderNo === orderNo;
+            });
+            var printContent = `
+        <h2>Order No: ${orderToPrint.orderNo}</h2>
+        <p><strong>Name:</strong> ${orderToPrint.name}</p>
+        <p><strong>Delivery Date:</strong> ${orderToPrint.deliveryDate}</p>
+        <p><strong>Delivery Time:</strong> ${orderToPrint.deliveryTime}</p>
+        <p><strong>Advance:</strong> ${orderToPrint.advance}</p>
+        <p><strong>Balance:</strong> ${orderToPrint.balance}</p>
+        <p><strong>Boxes:</strong> ${formatBoxes(orderToPrint.boxes)}</p>
+        <p><strong>Items:</strong> ${formatItems(orderToPrint.items)}</p>
+        <p><strong>Items Departments:</strong> ${formatItemsDepartments(orderToPrint.items)}</p>
+        <p><strong>Items Quantities:</strong> ${formatItemsQuantities(orderToPrint.items)}</p>
+      `;
+            document.getElementById('printContent').innerHTML = printContent;
+            document.getElementById('printModal').style.display = "block";
+        }
+
+        function closePrintModal() {
+            document.getElementById('printModal').style.display = "none";
+        }
+
+        function returnHome() {
+            window.location.href = "index.html"; // Redirect to home page
+        }
+
+        function searchOrderByOrderNo() {
+            var input, filter, ledger, cards, i, card, orderNo, txtValue;
+            input = document.getElementById("searchOrderNoInput");
+            filter = input.value.toUpperCase();
+            ledger = document.getElementById("ledger");
+            cards = ledger.getElementsByClassName("card");
+            for (i = 0; i < cards.length; i++) {
+                card = cards[i];
+                orderNo = card.getElementsByClassName("card-header")[0];
+                txtValue = orderNo.textContent || orderNo.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+
+        function searchOrderByName() {
+            var input, filter, ledger, cards, i, card, name, txtValue;
+            input = document.getElementById("searchNameInput");
+            filter = input.value.toUpperCase();
+            ledger = document.getElementById("ledger");
+            cards = ledger.getElementsByClassName("card");
+            for (i = 0; i < cards.length; i++) {
+                card = cards[i];
+                name = card.getElementsByTagName("p")[0];
+                txtValue = name.textContent || name.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

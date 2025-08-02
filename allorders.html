@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders</title>
+    <style>
+        /* Add your CSS styles here */
+        .container {
+            margin: 20px auto;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+            /* Adjust font size as needed */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .btn-group {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-group button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Add your modal styles here */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .item-row {
+            margin-bottom: 10px;
+        }
+
+        @media only screen and (max-width: 600px) {
+
+            /* Adjust table layout for smaller screens */
+            table,
+            th,
+            td {
+                font-size: 12px;
+            }
+
+            .btn-group button {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+        }
+
+        /* Style for the container div */
+        .home-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* Style for the home button */
+        .home-button {
+            display: block;
+            width: 30px;
+            /* Adjust width as needed */
+            height: 30px;
+            /* Adjust height as needed */
+        }
+
+        /* Style for the home button image */
+        .home-button img {
+            width: 100%;
+            /* Make the image fill the button */
+            height: auto;
+            transition: filter 0.3s ease;
+            /* Add transition for smooth color change */
+        }
+
+        /* Hover effect for the home button image */
+        .home-button:hover img {
+            filter: grayscale(100%);
+            /* Convert the image to black and white */
+        }
+
+        /* Hide specified columns when printing */
+        @media print {
+
+            th:nth-child(8),
+            td:nth-child(8),
+            th:nth-child(9),
+            td:nth-child(9),
+            th:nth-child(10),
+            td:nth-child(10),
+            th:nth-child(11),
+            td:nth-child(11) {
+                display: none;
+            }
+        }
+
+        /* Button styles */
+        .button {
+            display: inline-block;
+            padding: 8px 16px;
+            /* Decreased padding */
+            font-size: 16px;
+            /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+            /* Darker shade on hover */
+        }
+
+        /* Logout button styles */
+        .logout-button {
+            padding: 8px 16px;
+            /* Decreased padding */
+            font-size: 16px;
+            /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #dc3545;
+            /* Red color for logout button */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+            /* Darker shade on hover */
+        }
+
+        /* Logo image styles */
+        .logo {
+            width: 100px;
+            /* Adjust width */
+            height: auto;
+            /* Maintain aspect ratio */
+            margin-top: 70px;
+            /* Adjust margin */
+        }
+
+        /* Navbar styles */
+        nav {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px;
+            /* Add margin */
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #495057;
+        }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <nav>
+        <a href="neworder.html">New Order</a>
+        <a href="allorders.html">All Orders</a>
+        <a href="Ldgr.html">Order Slip</a>
+        <a href="snacks.html">Snacks</a>
+        <a href="packing.html">Packing</a>
+        <a href="ordertime.html">Department Wise</a>
+        <button class="button logout-button" onclick="logout()">Logout</button>
+    </nav>
+    <div class="container">
+        <h2>All Orders</h2>
+
+        <div>
+            <a href="home.html" class="home-button">
+                <img src="img/home.png" alt="Home">
+            </a>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="printPage()">Print</button>
+            <button onclick="copyTable()">Copy</button>
+            <button onclick="returnneworder()">New Order</button>
+            <label for="filterDate">Filter by Date:</label>
+            <input type="date" id="filterDate" onchange="filterOrders()">
+            <label for="filterOrderNo">Filter by Order No:</label>
+            <input type="number" id="filterOrderNo" onchange="filterOrders()">
+            <button onclick="confirmRemoveAllOrders()">Remove All Orders</button>
+
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order No</th>
+                    <th>Name</th>
+                    <th>Delivery Date</th>
+                    <th>Delivery Time</th>
+                    <th>Advance</th>
+                    <th>Balance</th>
+                    <th>Boxes</th>
+                    <th>Items</th>
+                    <th>Items Departments</th>
+                    <th>Items Quantities</th>
+                    <!-- Removed "Print Time" column -->
+                    <th>Action</th> <!-- Added Action column -->
+                </tr>
+            </thead>
+            <tbody id="ordersBody">
+                <!-- Orders will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Edit Order Popup -->
+    <div id="editOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Edit Order</h3>
+            <form id="editOrderForm">
+                <label for="editName">Name:</label><br>
+                <input type="text" id="editName" name="editName"><br>
+                <label for="editDeliveryDate">Delivery Date:</label><br>
+                <input type="date" id="editDeliveryDate" name="editDeliveryDate"><br>
+                <label for="editDeliveryTime">Delivery Time:</label><br>
+                <input type="text" id="editDeliveryTime" name="editDeliveryTime"><br>
+                <label for="editAdvance">Advance:</label><br>
+                <input type="text" id="editAdvance" name="editAdvance"><br>
+                <label for="editBalance">Balance:</label><br>
+                <input type="text" id="editBalance" name="editBalance"><br>
+                <div id="boxesContainer"></div>
+                <div id="itemsContainer"></div>
+                <div id="remarkContainer">
+                    <label for="editRemark">Remark:</label><br>
+                    <textarea id="editRemark" name="editRemark"></textarea><br>
+                </div>
+                <button type="button" id="addBoxButton">Add Box</button>
+                <button type="button" id="addItemButton">Add Item</button>
+                <button type="button" id="saveEditButton">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+
+        function confirmRemoveAllOrders() {
+            if (confirm("Are you sure you want to remove all orders?")) {
+                removeAllOrders();
+            }
+        }
+
+        function removeAllOrders() {
+            localStorage.removeItem('allOrders');
+            location.reload(); // Reload the page to reflect the changes
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            displayOrders();
+        });
+
+        function displayOrders() {
+            var ordersBody = document.getElementById('ordersBody');
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+            orders.forEach(function (order) {
+                var row = document.createElement('tr');
+
+                var orderInfo = [
+                    order.orderNo,
+                    order.name,
+                    order.deliveryDate,
+                    order.deliveryTime,
+                    order.advance,
+                    order.balance,
+                    formatBoxes(order.boxes),
+                    formatItems(order.items),
+                    formatItemsDepartments(order.items),
+                    formatItemsQuantities(order.items),
+                    // Added buttons for editing and removing orders
+                    `<button onclick="openEditModal('${order.orderNo}')">Edit</button> <button onclick="confirmRemoveOrder('${order.orderNo}')">Remove</button>`
+                ];
+
+                orderInfo.forEach(function (data) {
+                    var cell = document.createElement('td');
+                    cell.innerHTML = data;
+                    row.appendChild(cell);
+                });
+
+                ordersBody.appendChild(row);
+            });
+        }
+
+        function formatBoxes(boxes) {
+            return boxes.map(function (box) {
+                // Format price in Indian format (comma separated)
+                var formattedPrice = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(box.rate);
+                return box.type + ': ' + box.total + ' box(es) at ' + formattedPrice + ' each';
+            }).join('<br>');
+        }
+
+        function formatItems(items) {
+            return items.map(function (item) {
+                return `${item.name}: ${item.quantity}`;
+            }).join('<br>');
+        }
+
+        function formatItemsDepartments(items) {
+            return items.map(function (item) {
+                return item.department;
+            }).join('<br>');
+        }
+
+        function formatItemsQuantities(items) {
+            return items.map(function (item) {
+                return item.quantity;
+            }).join('<br>');
+        }
+
+        function printPage() {
+            window.print();
+        }
+
+        function copyTable() {
+            var table = document.querySelector('table');
+            var range = document.createRange();
+            range.selectNode(table);
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alert('Table copied to clipboard!');
+        }
+
+        function returnneworder() {
+            window.location.href = "neworder.html"; // Redirect to new order page
+        }
+
+        function openEditModal(orderNo) {
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var orderToEdit = orders.find(function (order) {
+                return order.orderNo === orderNo;
+            });
+
+            document.getElementById('editName').value = orderToEdit.name;
+            document.getElementById('editDeliveryDate').value = orderToEdit.deliveryDate;
+            document.getElementById('editDeliveryTime').value = orderToEdit.deliveryTime;
+            document.getElementById('editAdvance').value = orderToEdit.advance;
+            document.getElementById('editBalance').value = orderToEdit.balance;
+            document.getElementById('editRemark').value = orderToEdit.remark || ''; // Set the value of the remark field
+
+            var boxesContainer = document.getElementById('boxesContainer');
+            boxesContainer.innerHTML = ''; // Clear previous content
+            orderToEdit.boxes.forEach(function (box, index) {
+                var boxDiv = document.createElement('div');
+                boxDiv.classList.add('item-row');
+                boxDiv.innerHTML = `<input type="text" name="boxType" value="${box.type}" placeholder="Box Type">
+                            <input type="number" name="boxTotal" value="${box.total}" placeholder="Total">
+                            <input type="number" name="boxRate" value="${box.rate}" placeholder="Rate">
+                            <button type="button" onclick="removeBox(this)">Remove</button>`;
+                boxesContainer.appendChild(boxDiv);
+            });
+
+            var itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = ''; // Clear previous content
+            orderToEdit.items.forEach(function (item, index) {
+                var itemDiv = document.createElement('div');
+                itemDiv.classList.add('item-row');
+                itemDiv.innerHTML = `<input type="text" name="itemName" value="${item.name}" placeholder="Item Name">
+                             <input type="number" name="itemQuantity" value="${item.quantity}" placeholder="Quantity">
+                             <input type="text" name="itemDepartment" value="${item.department}" placeholder="Department">
+                             <textarea name="itemRemark" placeholder="Remark">${item.remark || ''}</textarea>
+                             <button type="button" onclick="removeItem(this)">Remove</button>`;
+                itemsContainer.appendChild(itemDiv);
+            });
+
+            var modal = document.getElementById('editOrderModal');
+            modal.style.display = "block";
+
+            var closeButton = document.getElementsByClassName("close")[0];
+            closeButton.onclick = function () {
+                modal.style.display = "none";
+            };
+
+            document.getElementById('addBoxButton').onclick = function () {
+                addBox();
+            };
+
+            document.getElementById('addItemButton').onclick = function () {
+                addItem();
+            };
+
+            document.getElementById('saveEditButton').onclick = function () {
+                orderToEdit.name = document.getElementById('editName').value;
+                orderToEdit.deliveryDate = document.getElementById('editDeliveryDate').value;
+                orderToEdit.deliveryTime = document.getElementById('editDeliveryTime').value;
+                orderToEdit.advance = document.getElementById('editAdvance').value;
+                orderToEdit.balance = document.getElementById('editBalance').value;
+                orderToEdit.remark = document.getElementById('editRemark').value; // Get the value of the remark field
+                orderToEdit.boxes = parseBoxes();
+                orderToEdit.items = parseItems();
+
+                var index = orders.findIndex(function (order) {
+                    return order.orderNo === orderNo;
+                });
+
+                orders[index] = orderToEdit;
+
+                localStorage.setItem('allOrders', JSON.stringify(orders));
+
+                modal.style.display = "none";
+
+                var ordersBody = document.getElementById('ordersBody');
+                ordersBody.innerHTML = '';
+                displayOrders();
+
+                alert("Order edited: " + orderNo);
+            };
+        }
+
+        function addBox() {
+            var boxesContainer = document.getElementById('boxesContainer');
+            var boxDiv = document.createElement('div');
+            boxDiv.classList.add('item-row');
+            boxDiv.innerHTML = `<input type="text" name="boxType" placeholder="Box Type">
+                        <input type="number" name="boxTotal" placeholder="Total">
+                        <input type="number" name="boxRate" placeholder="Rate">
+                        <button type="button" onclick="removeBox(this)">Remove</button>`;
+            boxesContainer.appendChild(boxDiv);
+        }
+
+        function addItem() {
+            var itemsContainer = document.getElementById('itemsContainer');
+            var itemDiv = document.createElement('div');
+            itemDiv.classList.add('item-row');
+            itemDiv.innerHTML = `<input type="text" name="itemName" placeholder="Item Name">
+                         <input type="number" name="itemQuantity" placeholder="Quantity">
+                         <input type="text" name="itemDepartment" placeholder="Department">
+                         <textarea name="itemRemark" placeholder="Remark"></textarea>
+                         <button type="button" onclick="removeItem(this)">Remove</button>`;
+            itemsContainer.appendChild(itemDiv);
+        }
+
+        function removeBox(button) {
+            button.parentNode.remove();
+        }
+
+        function removeItem(button) {
+            button.parentNode.remove();
+        }
+
+        function confirmRemoveOrder(orderNo) {
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var orderToRemove = orders.find(function (order) {
+                return order.orderNo === orderNo;
+            });
+
+            var confirmationMessage = "Are you sure you want to remove the following order?\n\n";
+            confirmationMessage += "Order No: " + orderToRemove.orderNo + "\n";
+            confirmationMessage += "Name: " + orderToRemove.name + "\n";
+            confirmationMessage += "Delivery Date: " + orderToRemove.deliveryDate + "\n";
+            confirmationMessage += "Delivery Time: " + orderToRemove.deliveryTime + "\n";
+            confirmationMessage += "Advance: " + orderToRemove.advance + "\n";
+            confirmationMessage += "Balance: " + orderToRemove.balance + "\n";
+
+            if (confirm(confirmationMessage)) {
+                removeOrder(orderNo);
+            }
+        }
+
+        function removeOrder(orderNo) {
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            var filteredOrders = orders.filter(function (order) {
+                return order.orderNo !== orderNo;
+            });
+            localStorage.setItem('allOrders', JSON.stringify(filteredOrders));
+            location.reload(); // Reload the page to reflect the changes
+        }
+
+        function parseBoxes() {
+            var boxesContainer = document.getElementById('boxesContainer');
+            var boxes = [];
+            var boxDivs = boxesContainer.querySelectorAll('.item-row');
+            boxDivs.forEach(function (boxDiv) {
+                var type = boxDiv.querySelector('input[name="boxType"]').value;
+                var total = boxDiv.querySelector('input[name="boxTotal"]').value;
+                var rate = boxDiv.querySelector('input[name="boxRate"]').value;
+                boxes.push({ type: type, total: total, rate: rate });
+            });
+            return boxes;
+        }
+
+        function parseItems() {
+            var itemsContainer = document.getElementById('itemsContainer');
+            var items = [];
+            var itemDivs = itemsContainer.querySelectorAll('.item-row');
+            itemDivs.forEach(function (itemDiv) {
+                var name = itemDiv.querySelector('input[name="itemName"]').value;
+                var quantity = itemDiv.querySelector('input[name="itemQuantity"]').value;
+                var department = itemDiv.querySelector('input[name="itemDepartment"]').value;
+                var remark = itemDiv.querySelector('textarea[name="itemRemark"]').value; // Get the value of the remark field
+                items.push({ name: name, quantity: quantity, department: department, remark: remark });
+            });
+            return items;
+        }
+
+        function filterOrders() {
+            var filterDate = document.getElementById('filterDate').value;
+            var filterOrderNo = document.getElementById('filterOrderNo').value;
+            var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+            var filteredOrders = orders.filter(function (order) {
+                return (filterDate === '' || order.deliveryDate === filterDate) &&
+                    (filterOrderNo === '' || order.orderNo == filterOrderNo);
+            });
+
+            var ordersBody = document.getElementById('ordersBody');
+            ordersBody.innerHTML = ''; // Clear previous content
+
+            filteredOrders.forEach(function (order) {
+                var row = document.createElement('tr');
+
+                var orderInfo = [
+                    order.orderNo,
+                    order.name,
+                    order.deliveryDate,
+                    order.deliveryTime,
+                    order.advance,
+                    order.balance,
+                    formatBoxes(order.boxes),
+                    formatItems(order.items),
+                    formatItemsDepartments(order.items),
+                    formatItemsQuantities(order.items),
+                    // Added buttons for editing and removing orders
+                    `<button onclick="openEditModal('${order.orderNo}')">Edit</button> <button onclick="confirmRemoveOrder('${order.orderNo}')">Remove</button>`
+                ];
+
+                orderInfo.forEach(function (data) {
+                    var cell = document.createElement('td');
+                    cell.innerHTML = data;
+                    row.appendChild(cell);
+                });
+
+                ordersBody.appendChild(row);
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>

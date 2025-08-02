@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Order</title>
+<style>
+    /* CSS styles for the New Order page */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin: 20px auto;
+        max-width: 400px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    input, select {
+        width: calc(100% - 20px);
+        padding: 2px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .item-container {
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        height: auto;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .remove-button {
+        background-color: #dc3545;
+    }
+
+    .remove-button:hover {
+        background-color: #c82333;
+    }
+
+    /* Style for the container div */
+.home-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+/* Style for the home button */
+.home-button {
+    display: block;
+    width: 30px; /* Adjust width as needed */
+    height: 30px; /* Adjust height as needed */
+}
+
+/* Style for the home button image */
+.home-button img {
+    width: 100%; /* Make the image fill the button */
+    height: auto;
+    transition: filter 0.3s ease; /* Add transition for smooth color change */
+    padding: 50px;
+}
+
+/* Hover effect for the home button image */
+.home-button:hover img {
+    filter: grayscale(100%); /* Convert the image to black and white */
+}
+
+        /* Button styles */
+        .button {
+            display: inline-block;
+            padding: 8px 16px; /* Decreased padding */
+            font-size: 16px; /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+        /* Logout button styles */
+        .logout-button {
+            padding: 8px 16px; /* Decreased padding */
+            font-size: 16px; /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #dc3545; /* Red color for logout button */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333; /* Darker shade on hover */
+        }
+
+        /* Logo image styles */
+        .logo {
+            width: 100px; /* Adjust width */
+            height: auto; /* Maintain aspect ratio */
+            margin-top: 70px; /* Adjust margin */
+        }
+
+        /* Navbar styles */
+        nav {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px; /* Add margin */
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #495057;
+        }
+</style>
+</head>
+<body>
+    
+    <nav>
+        <a href="neworder.html">New Order</a>
+        <a href="allorders.html">All Orders</a>
+        <a href="Ldgr.html">Order Slip</a>
+        <a href="snacks.html">Snacks</a>
+        <a href="packing.html">Packing</a>
+        <a href="ordertime.html">Department Wise</a>
+        <button class="button logout-button" onclick="logout()">Logout</button>
+    </nav>
+    <div>
+        <a href="home.html" class="home-button">
+            <img src="img/home.png" alt="Home">
+        </a>
+    </div>
+<div class="container">
+    <h2>New Order</h2>
+    <form id="orderForm" action="save-to-excel.php" method="post">
+        <label for="orderNo">Order No:</label>
+        <input type="number" id="orderNo" name="orderNo" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="deliveryDate">Delivery Date:</label>
+        <input type="date" id="deliveryDate" name="deliveryDate" required>
+
+        <label for="deliveryTime">Delivery Time:</label>
+        <input type="time" id="deliveryTime" name="deliveryTime" required>
+
+        <div id="boxContainer">
+            <div class="item-container">
+                <label for="boxType">Box Type:</label>
+                <input type="text" name="boxType" required>
+
+                <label for="totalBox">Total Box:</label>
+                <input type="number" name="totalBox" required>
+
+                <label for="boxRate">Box Rate:</label>
+                <input type="number" name="boxRate"  step="0.01">
+
+                <label for="packing">Packing:</label> <!-- Add packing label -->
+                <input type="text" name="packing" required> <!-- Add packing input field -->
+
+                <button type="button" class="remove-button" onclick="removeBox(this)">Remove Box</button>
+            </div>
+        </div>
+
+        <button type="button" onclick="addBox()">Add Box</button>
+        <br><br>
+
+        <label for="advance">Advance:</label>
+        <input type="number" id="advance" name="advance" step="0.01" >
+
+        <label for="balance">Balance:</label>
+        <input type="number" id="balance" name="balance" readonly>
+
+        <div id="itemsContainer">
+            <div class="item-container">
+                <label for="itemName">Item Name:</label>
+                <input type="text" name="itemName" required>
+
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity" required step="0.01">
+
+                <label for="department">Department:</label>
+                <input type="text" name="department" required>
+
+                <label for="remark">Remark:</label> <!-- New Remark input field -->
+                <input type="text" name="remark"> <!-- New Remark input field -->
+
+                <button type="button" class="remove-button" onclick="removeItem(this)">Remove Item</button>
+            </div>
+        </div>
+
+        <button type="button" onclick="addItem()">Add Item</button>
+        <br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+function addBox() {
+    var container = document.createElement('div');
+    container.classList.add('item-container');
+
+    var label = document.createElement('label');
+    label.textContent = 'Box Type:';
+    container.appendChild(label);
+
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'boxType';
+    input.required = true;
+    container.appendChild(input);
+
+    label = document.createElement('label');
+    label.textContent = 'Total Box:';
+    container.appendChild(label);
+
+    input = document.createElement('input');
+    input.type = 'number';
+    input.name = 'totalBox';
+    input.required = true;
+    container.appendChild(input);
+
+    label = document.createElement('label');
+    label.textContent = 'Box Rate:';
+    container.appendChild(label);
+
+    input = document.createElement('input');
+    input.type = 'number';
+    input.name = 'boxRate';
+    input.required = true;
+    input.step = '0.01';
+    container.appendChild(input);
+
+    label = document.createElement('label');
+    label.textContent = 'Packing:';
+    container.appendChild(label);
+
+    input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'packing';
+    input.required = true;
+    container.appendChild(input);
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Remove Box';
+    button.classList.add('remove-button');
+    button.onclick = function() {
+        removeBox(button);
+    };
+    container.appendChild(button);
+
+    document.getElementById('boxContainer').appendChild(container);
+}
+
+function removeBox(button) {
+    button.parentNode.remove();
+}
+
+function addItem() {
+    var container = document.createElement('div');
+    container.classList.add('item-container');
+
+    var label = document.createElement('label');
+    label.textContent = 'Item Name:';
+    container.appendChild(label);
+
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'itemName';
+    input.required = true;
+    container.appendChild(input);
+
+    label = document.createElement('label');
+    label.textContent = 'Quantity:';
+    container.appendChild(label);
+
+    input = document.createElement('input');
+    input.type = 'number';
+    input.name = 'quantity';
+    input.required = true;
+    input.step = '0.01';
+    container.appendChild(input);
+
+    label = document.createElement('label');
+    label.textContent = 'Department:';
+    container.appendChild(label);
+
+    input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'department';
+    input.required = true;
+    container.appendChild(input);
+
+    label = document.createElement('label');
+    label.textContent = 'Remark:';
+    container.appendChild(label);
+
+    input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'remark'; // New Remark input field
+    container.appendChild(input); // New Remark input field
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Remove Item';
+    button.classList.add('remove-button');
+    button.onclick = function() {
+        removeItem(button);
+    };
+    container.appendChild(button);
+
+    document.getElementById('itemsContainer').appendChild(container);
+}
+
+function removeItem(button) {
+    button.parentNode.remove();
+}
+
+function calculateBalance() {
+    var totalBoxElements = document.querySelectorAll('input[name="totalBox"]');
+    var boxRateElements = document.querySelectorAll('input[name="boxRate"]');
+    var packingElements = document.querySelectorAll('input[name="packing"]'); // Get packing input fields
+    var advance = parseFloat(document.getElementById('advance').value) || 0;
+
+    var total = 0;
+    for (var i = 0; i < totalBoxElements.length; i++) {
+        var totalBox = parseFloat(totalBoxElements[i].value) || 0;
+        var boxRate = parseFloat(boxRateElements[i].value) || 0;
+        var packingCost = parseFloat(packingElements[i].value) || 0; // Get packing cost
+
+        total += (totalBox * boxRate) + packingCost; // Include packing cost in total
+    }
+
+    var balance = total - advance;
+    document.getElementById('balance').value = balance.toFixed(2);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        // Calculate the balance before proceeding
+        calculateBalance();
+
+        // Get form values
+        var orderNo = document.getElementById("orderNo").value;
+        var name = document.getElementById("name").value;
+        var deliveryDate = document.getElementById("deliveryDate").value;
+        var deliveryTime = document.getElementById("deliveryTime").value;
+        var advance = document.getElementById("advance").value;
+        var balance = document.getElementById("balance").value;
+
+        var boxes = [];
+        var boxContainers = document.querySelectorAll('#boxContainer .item-container');
+        boxContainers.forEach(function(container) {
+            var boxType = container.querySelector('input[name="boxType"]').value;
+            var totalBox = container.querySelector('input[name="totalBox"]').value;
+            var boxRate = container.querySelector('input[name="boxRate"]').value;
+            var packing = container.querySelector('input[name="packing"]').value; // Get packing value
+            boxes.push({ type: boxType, total: totalBox, rate: boxRate, packing: packing }); // Include packing in box
+        });
+
+        var items = [];
+        var itemContainers = document.querySelectorAll('#itemsContainer .item-container');
+        itemContainers.forEach(function(container) {
+            var itemName = container.querySelector('input[name="itemName"]').value;
+            var quantity = container.querySelector('input[name="quantity"]').value;
+            var department = container.querySelector('input[name="department"]').value;
+            var remark = container.querySelector('input[name="remark"]').value; // Get Remark value
+            items.push({ name: itemName, quantity: quantity, department: department, remark: remark }); // Include Remark in items
+        });
+
+        // Create order object
+        var order = {
+            orderNo: orderNo,
+            name: name,
+            deliveryDate: deliveryDate,
+            deliveryTime: deliveryTime,
+            advance: advance,
+            balance: balance,
+            boxes: boxes,
+            items: items
+        };
+
+        // Save order to localStorage
+        var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+        orders.push(order);
+        localStorage.setItem('allOrders', JSON.stringify(orders));
+
+        // Redirect to the all orders page
+        window.location.href = "allorders.html";
+    });
+
+    // Recalculate balance when advance or box inputs change
+    document.getElementById('advance').addEventListener('input', calculateBalance);
+    document.getElementById('boxContainer').addEventListener('input', calculateBalance);
+});
+</script>
+</body>
+</html>

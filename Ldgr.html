@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Orders</title>
+<style>
+    /* Add your CSS styles here */
+    .container {
+        margin: 20px auto;
+        max-width: 800px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+        font-size: 12px; /* Adjust font size as needed */
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #ddd;
+    }
+
+    .btn-group {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-group button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 6px 12px;
+        margin-right: 5px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-group button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Add your modal styles here */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .item-row {
+        margin-bottom: 10px;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .container, .container * {
+            visibility: visible;
+        }
+        .container {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .container th, .container td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        .container th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .container tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .container tr:hover {
+            background-color: #ddd;
+        }
+    }
+
+    @media print {
+    .print-modal {
+        display: none !important; /* Hide the print modal */
+    }
+}
+/* Style for the container div */
+.home-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+/* Style for the home button */
+.home-button {
+    display: block;
+    width: 50px; /* Adjust width as needed */
+    height: 50px; /* Adjust height as needed */
+}
+
+/* Style for the home button image */
+.home-button img {
+    width: 100%; /* Make the image fill the button */
+    height: auto;
+    transition: filter 0.3s ease; /* Add transition for smooth color change */
+}
+
+/* Hover effect for the home button image */
+.home-button:hover img {
+    filter: grayscale(100%); /* Convert the image to black and white */
+}
+/* Style for the container div */
+.home-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+/* Style for the home button */
+.home-button {
+    display: block;
+    width: 30px; /* Adjust width as needed */
+    height: 30px; /* Adjust height as needed */
+}
+
+/* Style for the home button image */
+.home-button img {
+    width: 100%; /* Make the image fill the button */
+    height: auto;
+    transition: filter 0.3s ease; /* Add transition for smooth color change */
+}
+
+/* Hover effect for the home button image */
+.home-button:hover img {
+    filter: grayscale(100%); /* Convert the image to black and white */
+}
+
+        /* Button styles */
+        .button {
+            display: inline-block;
+            padding: 8px 16px; /* Decreased padding */
+            font-size: 16px; /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+        /* Logout button styles */
+        .logout-button {
+            padding: 8px 16px; /* Decreased padding */
+            font-size: 16px; /* Decreased font size */
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #dc3545; /* Red color for logout button */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333; /* Darker shade on hover */
+        }
+
+        /* Logo image styles */
+        .logo {
+            width: 100px; /* Adjust width */
+            height: auto; /* Maintain aspect ratio */
+            margin-top: 70px; /* Adjust margin */
+        }
+
+        /* Navbar styles */
+        nav {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px; /* Add margin */
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #495057;
+        }
+</style>
+</head>
+<body>
+    <nav>
+        <a href="neworder.html">New Order</a>
+        <a href="allorders.html">All Orders</a>
+        <a href="Ldgr.html">Order Slip</a>
+        <a href="snacks.html">Snacks</a>
+        <a href="packing.html">Packing</a>
+        <a href="ordertime.html">Department Wise</a>
+        <button class="button logout-button" onclick="logout()">Logout</button>
+    </nav>
+
+    <div>
+        <a href="home.html" class="home-button">
+            <img src="img/home.png" alt="Home">
+        </a>
+    </div>
+    
+    
+<div class="container">
+    <h2>Costumer List </h2>
+    <!-- Orders will be inserted here dynamically -->
+    <div id="ordersContainer"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    displayOrders();
+});
+
+function displayOrders() {
+    var ordersContainer = document.getElementById('ordersContainer');
+    var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+    orders.forEach(function(order) {
+        var orderTable = document.createElement('table');
+        orderTable.style.marginBottom = '30px'; // Adjust margin as needed
+
+        var headerRow = document.createElement('tr');
+        var headers = ['Order No', 'Name', 'Delivery Date', 'Delivery Time', 'Boxes', 'Print'];
+        headers.forEach(function(header) {
+            var th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        orderTable.appendChild(headerRow);
+
+        var row = document.createElement('tr');
+
+        var orderInfo = [
+            order.orderNo,
+            order.name,
+            order.deliveryDate,
+            order.deliveryTime,
+            formatBoxes(order.boxes),
+            '<button onclick="printOrder(this)">Print</button>' // Print button
+        ];
+
+        orderInfo.forEach(function(data) {
+            var cell = document.createElement('td');
+            cell.innerHTML = data;
+            row.appendChild(cell);
+        });
+
+        orderTable.appendChild(row);
+
+        // Add Advance and Balance fields
+        var advanceRow = document.createElement('tr');
+        var advanceCell = document.createElement('td');
+        advanceCell.colSpan = 6; // Span the cell across all columns
+        advanceCell.textContent = 'Advance: ' + order.advance;
+        advanceRow.appendChild(advanceCell);
+        orderTable.appendChild(advanceRow);
+
+        var balanceRow = document.createElement('tr');
+        var balanceCell = document.createElement('td');
+        balanceCell.colSpan = 6; // Span the cell across all columns
+        balanceCell.textContent = 'Balance: ' + order.balance;
+        balanceRow.appendChild(balanceCell);
+        orderTable.appendChild(balanceRow);
+
+        ordersContainer.appendChild(orderTable);
+    });
+}
+
+
+function formatBoxes(boxes) {
+    return boxes.map(function(box) {
+        // Format price in Indian format (comma separated)
+        var formattedPrice = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(box.rate);
+        return box.type + ': ' + box.total + ' box(es) at ' + formattedPrice + ' each';
+    }).join('<br>');
+}
+
+function printOrder(button) {
+    var orderTable = button.parentNode.parentNode.parentNode;
+    var orderContainer = document.createElement('div');
+    orderContainer.appendChild(orderTable.cloneNode(true));
+    var printWindow = window.open('', '_blank');
+    printWindow.document.body.innerHTML = orderContainer.innerHTML;
+    printWindow.print();
+}
+
+function searchOrders() {
+    var searchName = document.getElementById('searchName').value.trim().toLowerCase();
+    var searchOrderNo = document.getElementById('searchOrderNo').value.trim().toLowerCase();
+    var orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+    var filteredOrders = orders.filter(function(order) {
+        var nameMatch = order.name.toLowerCase().includes(searchName);
+        var orderNoMatch = order.orderNo.toLowerCase().includes(searchOrderNo);
+        return nameMatch && orderNoMatch;
+    });
+
+    var ordersContainer = document.getElementById('ordersContainer');
+    ordersContainer.innerHTML = ''; // Clear previous content
+
+    filteredOrders.forEach(function(order) {
+        var orderDiv = document.createElement('div');
+        orderDiv.classList.add('order');
+
+        var orderInfo = `
+            <p><strong>Order No:</strong> ${order.orderNo}</p>
+            <p><strong>Name:</strong> ${order.name}</p>
+            <p><strong>Delivery Date:</strong> ${order.deliveryDate}</p>
+            <p><strong>Delivery Time:</strong> ${order.deliveryTime}</p>
+            <p><strong>Boxes:</strong> ${formatBoxes(order.boxes)}</p>
+            <p><strong>Advance:</strong> ${order.advance}</p>
+            <p><strong>Balance:</strong> ${order.balance}</p>
+            <button onclick="printOrder(this)">Print</button>
+        `;
+        orderDiv.innerHTML = orderInfo;
+
+        ordersContainer.appendChild(orderDiv);
+    });
+}
+
+</script>
+
+</body>
+</html>

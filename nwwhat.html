@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders - Print</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Print button styles */
+        #printButton {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* Department heading styles */
+        .department-heading {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Filter input field styles */
+        #searchInput {
+            width: 100%;
+            padding: 8px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Filter label styles */
+        label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Hide department tables initially */
+        .department-table {
+            display: none;
+        }
+
+        /* Show department tables */
+        .show {
+            display: table;
+        }
+
+        /* WhatsApp button styles */
+        .whatsapp-button {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: green;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align: center;">All Orders - Department Wise</h1>
+    <!-- Search input field -->
+    <div>
+        <label for="searchInput">Search Department:</label>
+        <input type="text" id="searchInput" onkeyup="filterDepartments()">
+    </div>
+    <!-- Department-wise order tables will be inserted here dynamically -->
+</div>
+
+<!-- Print button -->
+<button id="printButton" onclick="printOrders()">Print</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    displayAllOrders();
+});
+
+function displayAllOrders() {
+    var allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+    var departments = {};
+
+    // Group orders by department
+    allOrders.forEach(function(order) {
+        order.items.forEach(function(item) {
+            if (!departments[item.department]) {
+                departments[item.department] = {};
+            }
+            if (!departments[item.department][item.name]) {
+                departments[item.department][item.name] = {
+                    quantity: parseFloat(item.quantity),
+                    remark: item.remark || 'N/A', // Check if remark is undefined
+                    deliveryDate: order.deliveryDate || 'N/A',
+                    deliveryTime: order.deliveryTime || 'N/A'
+                };
+            } else {
+                departments[item.department][item.name].quantity += parseFloat(item.quantity);
+            }
+        });
+    });
+
+    // Display department-wise order tables
+    for (var department in departments) {
+        var departmentOrders = departments[department];
+        var departmentTable = createDepartmentTable(department, departmentOrders);
+        document.querySelector('.container').appendChild(departmentTable);
+        
+        // Create WhatsApp button for each department
+        var whatsappButton = document.createElement('button');
+        whatsappButton.textContent = 'WhatsApp Department Orders';
+        whatsappButton.className = 'whatsapp-button';
+        whatsappButton.onclick = (function(dept, orders) {
+            return function() {
+                sendToWhatsApp(dept, orders);
+            };
+        })(department, departmentOrders);
+        document.querySelector('.container').appendChild(whatsappButton);
+    }
+}
+
+function createDepartmentTable(department, orders) {
+    var table = document.createElement('table');
+    table.classList.add("department-table");
+    var html = `
+        <thead>
+            <tr>
+                <th colspan="5" class="department-heading">Department: ${department}</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Remark</th>
+                <th>Delivery Date</th>
+                <th>Delivery Time</th> <!-- Add delivery time column -->
+            </tr>
+        </thead>
+        <tbody>`;
+    for (var item in orders) {
+        html += `
+            <tr>
+                <td>${item}</td>
+                <td>${Math.ceil(orders[item].quantity)}</td>
+                <td>${orders[item].remark}</td>
+                <td>${orders[item].deliveryDate}</td>
+                <td>${orders[item].deliveryTime}</td>
+            </tr>`;
+    }
+    html += `
+        </tbody>`;
+    table.innerHTML = html;
+    return table;
+}
+
+function filterDepartments() {
+    var searchInput = document.getElementById("searchInput").value.trim().toUpperCase();
+    var tables = document.querySelectorAll('.department-table');
+    tables.forEach(function(table) {
+        var departmentName = table.querySelector('.department-heading').textContent.toUpperCase();
+        var displayTable = departmentName.includes(searchInput);
+        table.classList.toggle("show", displayTable);
+    });
+}
+
+function printOrders() {
+    window.print();
+}
+
+function sendToWhatsApp(department, orders) {
+    var message = "विभाग " + department + " के आदेश:\n";
+    for (var item in orders) {
+        message += `नाम: ${item}\nमात्रा: ${Math.ceil(orders[item].quantity)}\nटिप्पणी: ${orders[item].remark}\nवितरण तिथि: ${orders[item].deliveryDate}\nवितरण समय: ${orders[item].deliveryTime}\n\n`;
+    }
+    var whatsappLink = "https://wa.me/?text=" + encodeURIComponent(message);
+    window.location.href = whatsappLink;
+}
+</script>
+
+</body>
+</html>
